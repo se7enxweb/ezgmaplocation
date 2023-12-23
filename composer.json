@@ -1,5 +1,5 @@
 {
-    "name": "ezsystems/ezgmaplocation-ls-extension",
+    "name": "se7enxweb/ezgmaplocation-ls-extension",
     "description": "eZ Publish Legacy map location datatype extension",
     "type": "ezpublish-legacy-extension",
     "license": "GPL-2.0",
