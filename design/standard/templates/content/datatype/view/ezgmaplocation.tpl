@@ -6,8 +6,12 @@
 {/if}
 
 {* Make sure to normalize floats from db  *}
-{def $latitude  = $attribute.content.latitude|explode(',')|implode('.')
-     $longitude = $attribute.content.longitude|explode(',')|implode('.')}
+{* PHP 8.3 version or PHP 8.5 version *}
+{* def $latitude  = $attribute.content.latitude|explode(',')|implode('.')
+     $longitude = $attribute.content.longitude|explode(',')|implode('.') *}
+{* concat() forces value to string so explode/implode works on both float and string values (PHP 8 compat) *}
+{def $latitude  = concat( $attribute.content.latitude, '' )|explode(',')|implode('.')
+     $longitude = concat( $attribute.content.longitude, '' )|explode(',')|implode('.')}
 {run-once}
 <script type="text/javascript" src="//maps.google.com/maps/api/js?key={ezini('GMapSettings', 'ApiKey', 'ezgmaplocation.ini')}&sensor={ezini('GMapSettings', 'UseSensor', 'ezgmaplocation.ini')}"></script>
 <script type="text/javascript">
