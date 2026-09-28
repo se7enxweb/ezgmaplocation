@@ -52,5 +52,13 @@
         <source>Invalid Latitude/Longitude input.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%address not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

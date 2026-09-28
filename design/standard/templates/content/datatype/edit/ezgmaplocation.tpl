@@ -36,7 +36,7 @@ function eZGmapLocation_MapControl( attributeId, latLongAttributeBase )
                 }
                 else
                 {
-                     alert( address + " not found" );
+                     alert( {/literal}"{'%address not found'|i18n( 'extension/ezgmaplocation/datatype' )|wash( javascript )}"{literal}.replace( '%address', address ) );
                 }
             });
         }
@@ -86,7 +86,7 @@ function eZGmapLocation_MapControl( attributeId, latLongAttributeBase )
         },
         function( e )
         {
-            alert( 'Could not get your location, error was: ' + e.message );
+            alert( {/literal}"{'Could not get your location, error was: %error'|i18n( 'extension/ezgmaplocation/datatype' )|wash( javascript )}"{literal}.replace( '%error', e.message ) );
         },
         { 'gearsRequestAddress': true });
     };

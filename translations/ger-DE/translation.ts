@@ -50,15 +50,23 @@
     </message>
     <message>
         <source>Restores location and address values to what it was on page load.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt Ort und Adresse auf die Werte beim Laden der Seite zurück.</translation>
     </message>
     <message>
         <source>My current location</source>
-        <translation type="unfinished"></translation>
+        <translation>Mein aktueller Standort</translation>
     </message>
     <message>
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
-        <translation type="unfinished"></translation>
+        <translation>Ermittelt Ihren aktuellen Standort, wenn Ihr Browser Geolocation unterstützt und Sie dieser Website den Zugriff erlauben! Am genauesten mit einem eingebauten GPS in Ihrem Gerät! Beachten Sie, dass Sie die Adresse eventuell trotzdem von Hand eingeben müssen!</translation>
+    </message>
+    <message>
+        <source>%address not found</source>
+        <translation>%address nicht gefunden</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Ihr Standort konnte nicht ermittelt werden, Fehler: %error</translation>
     </message>
 </context>
 </TS>
