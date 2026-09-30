@@ -1,6 +1,6 @@
 {
     "name": "se7enxweb/ezgmaplocation",
-    "description": "eZ Publish Google Mapping Location solution within an extension",
+    "description": "Exponential Google Mapping Location solution within an extension",
     "type": "ezpublish-legacy-extension",
     "license": "GPL-2.0-or-later",
     "authors": [
