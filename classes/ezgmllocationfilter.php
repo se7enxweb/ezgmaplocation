@@ -7,6 +7,7 @@
 // ## BEGIN COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
 // SOFTWARE NAME: eZ Google Maps Location
 // SOFTWARE RELEASE: 1.x
+// COPYRIGHT NOTICE: Copyright (C) 1998 - 2026 7x & Exponential Foundation
 // COPYRIGHT NOTICE: Copyright (C) 2009-2014 eZ Systems AS
 // SOFTWARE LICENSE: GNU General Public License v2.0
 // NOTICE: >
