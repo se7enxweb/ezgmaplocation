@@ -114,8 +114,9 @@ class eZGmapLocationType extends eZDataType
             $address = '';
         	if ( $http->hasPostVariable( $base . '_data_gmaplocation_address_' . $contentObjectAttribute->attribute( 'id' ) ) )
             {
+                // Stored as typed; the templates escape it on output. htmlentities() here put entities into the
+                // search index, the sort key and the object name, while fromString() stored plain text anyway.
                 $address = $http->postVariable( $base . '_data_gmaplocation_address_' . $contentObjectAttribute->attribute( 'id' ) );
-                $address = htmlentities( $address, ENT_QUOTES , 'UTF-8' );
             }
 
             if ( $contentObjectAttribute->attribute( 'data_int' ) != 0 )
@@ -297,6 +298,9 @@ class eZGmapLocationType extends eZDataType
     function fromString( $contentObjectAttribute, $string )
     {
     	$data = $string !== '' && strpos( $string, '|#' ) !== false ? explode( '|#', $string ) : array( 0 );
+        // has_content, latitude, longitude and address: a shorter string stores nothing (it read undefined keys)
+        if ( count( $data ) < 4 )
+            $data = array( 0 );
 
     	if ( $data[0] != 0 )
     	{

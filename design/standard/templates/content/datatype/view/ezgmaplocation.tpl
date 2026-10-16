@@ -51,7 +51,7 @@ else if ( window.attachEvent )
 <label>{'Latitude'|i18n('extension/ezgmaplocation/datatype')}:</label> {$latitude}
 <label>{'Longitude'|i18n('extension/ezgmaplocation/datatype')}:</label> {$longitude}
   {if $attribute.content.address}
-    <label>{'Address'|i18n('extension/ezgmaplocation/datatype')}:</label> {$attribute.content.address}
+    <label>{'Address'|i18n('extension/ezgmaplocation/datatype')}:</label> {$attribute.content.address|wash}
   {/if}
 </div>
 
