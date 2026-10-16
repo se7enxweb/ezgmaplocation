@@ -35,6 +35,20 @@ database documentation on how to execute queries from a command-line clients
 6.) Now you can add the ezgmaplocation datatype like any other datatype when editing classes.
 
 
+Upgrade from 6.0.6 or earlier (required)
+---------------
+Earlier versions stored the address with HTML entities ("M&uuml;llerstra&szlig;e 5"); this version stores
+it as typed and escapes it on output. Before editors work with the new version, decode the stored rows
+once per database (siteaccess):
+
+    php extension/ezgmaplocation/bin/php/decodeaddressentities.php -s <siteaccess>          (dry run: lists the rows)
+    php extension/ezgmaplocation/bin/php/decodeaddressentities.php -s <siteaccess> --apply
+
+Check the dry-run list first: rows that were never encoded (package import, fromString()) and hold a
+literal "&xxx;" are decoded as well. Run it once only; addresses saved after the upgrade are stored as
+typed. Search index, sort key and object names follow on the next publish or a reindex.
+
+
 Use (editing)
 ---------------
 1. Type in the address you want to find beneath the map.

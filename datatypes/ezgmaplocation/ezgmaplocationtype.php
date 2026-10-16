@@ -298,8 +298,11 @@ class eZGmapLocationType extends eZDataType
     function fromString( $contentObjectAttribute, $string )
     {
     	$data = $string !== '' && strpos( $string, '|#' ) !== false ? explode( '|#', $string ) : array( 0 );
-        // has_content, latitude, longitude and address: a shorter string stores nothing (it read undefined keys)
-        if ( count( $data ) < 4 )
+        // has_content, latitude, longitude and address. Without the address the coordinates are kept with an
+        // empty one; a string without both coordinates stores nothing (it read undefined keys)
+        if ( count( $data ) === 3 )
+            $data[] = '';
+        else if ( count( $data ) < 3 )
             $data = array( 0 );
 
     	if ( $data[0] != 0 )
