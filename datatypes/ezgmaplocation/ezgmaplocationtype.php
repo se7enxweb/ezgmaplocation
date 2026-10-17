@@ -297,13 +297,20 @@ class eZGmapLocationType extends eZDataType
      */
     function fromString( $contentObjectAttribute, $string )
     {
-    	$data = $string !== '' && strpos( $string, '|#' ) !== false ? explode( '|#', $string ) : array( 0 );
+    	// At most four parts: an address that contains "|#" itself is kept whole instead of cut at it
+    	$data = $string !== '' && strpos( $string, '|#' ) !== false ? explode( '|#', $string, 4 ) : array( 0 );
         // has_content, latitude, longitude and address. Without the address the coordinates are kept with an
-        // empty one; a string without both coordinates stores nothing (it read undefined keys)
+        // empty one; a string without both coordinates stores nothing (it read undefined keys). The coordinates
+        // must be numbers, as the edit form requires: the view templates write them into a script unescaped.
         if ( count( $data ) === 3 )
             $data[] = '';
-        else if ( count( $data ) < 3 )
+        if ( count( $data ) < 4 || !is_numeric( trim( $data[1] ) ) || !is_numeric( trim( $data[2] ) ) )
             $data = array( 0 );
+        else
+        {
+            $data[1] = (float)trim( $data[1] );
+            $data[2] = (float)trim( $data[2] );
+        }
 
     	if ( $data[0] != 0 )
     	{
