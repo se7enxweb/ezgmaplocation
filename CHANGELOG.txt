@@ -1,5 +1,27 @@
 CHANGELOG
 
+Version 6.0.x (after 6.0.6)
+-------------------------------------------------------------------------------
+* The address is stored as typed. The edit form passed it through
+  htmlentities() before, so stored addresses hold entities such as
+  "M&uuml;llerstra&szlig;e 5", and the templates now escape the address
+  when they print it (|wash): without the upgrade step below these rows
+  show their entities on the page.
+  UPGRADE STEP, required, once, before editors work with the new version:
+    php extension/ezgmaplocation/bin/php/decodeaddressentities.php -s <siteaccess>
+  lists the rows it would change; check the list (rows that were never
+  encoded, from a package import or fromString(), and hold a literal
+  "&xxx;" are decoded as well), then run it again with --apply. Once per
+  database (siteaccess). Do not run it a second time later: addresses
+  saved after the upgrade are stored as typed. Search index, sort key
+  and object names follow on the next publish or a reindex.
+* fromString() keeps the coordinates of a string without address
+  ("1|#52.5|#13.4") and stores nothing for a string without both
+  coordinates, where it read undefined array keys.
+* ezgmaplocation.ini.append.php begins with "<?php /*": "<?php/*" is no
+  PHP open tag, and a direct request to the file printed it, ApiKey
+  included.
+
 Version 1.2
 -------------------------------------------------------------------------------
 * Change use of old templateInit()/ezi18n() api and use class based api's introduced in 4.3 instead
