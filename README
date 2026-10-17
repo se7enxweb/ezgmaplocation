@@ -35,7 +35,7 @@ database documentation on how to execute queries from a command-line clients
 6.) Now you can add the ezgmaplocation datatype like any other datatype when editing classes.
 
 
-Upgrade from 6.0.6 or earlier (required)
+Upgrade from 6.0.7 or earlier (required)
 ---------------
 Earlier versions stored the address with HTML entities ("M&uuml;llerstra&szlig;e 5"); this version stores
 it as typed and escapes it on output. Before editors work with the new version, decode the stored rows

@@ -3,7 +3,7 @@
 /**
  * One-off conversion: decode the HTML entities that the edit form used to store in ezgmaplocation.address.
  *
- * Up to 6.0.6 the datatype passed a posted address through htmlentities() before it stored it, so "Müllerstraße 5"
+ * Up to 6.0.7 the datatype passed a posted address through htmlentities() before it stored it, so "Müllerstraße 5"
  * was stored as "M&uuml;llerstra&szlig;e 5". The datatype now stores the address as typed and the templates escape
  * it on output; without this conversion the old rows would show their entities on the page.
  *

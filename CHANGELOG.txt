@@ -1,6 +1,6 @@
 CHANGELOG
 
-Version 6.0.x (after 6.0.6)
+Version 6.0.8
 -------------------------------------------------------------------------------
 * The address is stored as typed. The edit form passed it through
   htmlentities() before, so stored addresses hold entities such as
@@ -17,7 +17,13 @@ Version 6.0.x (after 6.0.6)
   and object names follow on the next publish or a reindex.
 * fromString() keeps the coordinates of a string without address
   ("1|#52.5|#13.4") and stores nothing for a string without both
-  coordinates, where it read undefined array keys.
+  coordinates, where it read undefined array keys. An address that
+  contains "|#" is kept whole, and coordinates that are not numbers store
+  no location (the edit form refused them already; the view template
+  writes them into a script).
+* The templates that put the address into a map script (cjw_themes_jumper
+  0.1.4, ezflow 6.1.6) escape it for HTML and then for JavaScript
+  (|wash|wash( 'javascript' )), the same order everywhere.
 * ezgmaplocation.ini.append.php begins with "<?php /*": "<?php/*" is no
   PHP open tag, and a direct request to the file printed it, ApiKey
   included.
