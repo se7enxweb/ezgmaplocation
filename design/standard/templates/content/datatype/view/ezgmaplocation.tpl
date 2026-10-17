@@ -14,39 +14,10 @@
      $longitude = concat( $attribute.content.longitude, '' )|explode(',')|implode('.')}
 {run-once}
 <script type="text/javascript" src="//maps.google.com/maps/api/js?key={ezini('GMapSettings', 'ApiKey', 'ezgmaplocation.ini')}&sensor={ezini('GMapSettings', 'UseSensor', 'ezgmaplocation.ini')}"></script>
-<script type="text/javascript">
-{literal}
-function eZGmapLocation_MapView( attributeId, latitude, longitude )
-{
-	var zoommax = 13;
-	
-	if( latitude && longitude )
-	{
-		var startPoint = new google.maps.LatLng( latitude, longitude );
-		var zoom = zoommax;
-		
-	}
-  else
-  {
-      var startPoint = new google.maps.LatLng( 0, 0 );
-      var zoom = 0;
-  }
-
-  var map = new google.maps.Map( document.getElementById( 'ezgml-map-' + attributeId ), { center: startPoint, zoom : zoom, mapTypeId: google.maps.MapTypeId.ROADMAP } );
-	var marker = new google.maps.Marker({ map: map, position: startPoint });
-}
-{/literal}
-</script>
+{ezscript( array( 'ezgmaplocation_map.js' ) )}
 {/run-once}
 
 {if $attribute.has_content}
-<script type="text/javascript">
-if ( window.addEventListener )
-    window.addEventListener('load', function(){ldelim} eZGmapLocation_MapView( {$attribute.id}, {first_set( $latitude, '0.0')}, {first_set( $longitude, '0.0')} ) {rdelim}, false);
-else if ( window.attachEvent )
-    window.attachEvent('onload', function(){ldelim} eZGmapLocation_MapView( {$attribute.id}, {first_set( $latitude, '0.0')}, {first_set( $longitude, '0.0')} ) {rdelim} );
-</script>
-
 <div class="block">
 <label>{'Latitude'|i18n('extension/ezgmaplocation/datatype')}:</label> {$latitude}
 <label>{'Longitude'|i18n('extension/ezgmaplocation/datatype')}:</label> {$longitude}
@@ -56,5 +27,5 @@ else if ( window.attachEvent )
 </div>
 
 <label>{'Map'|i18n('extension/ezgmaplocation/datatype')}:</label>
-<div id="ezgml-map-{$attribute.id}" style="width: {$width}px; height: {$height}px;"></div>
+<div id="ezgml-map-{$attribute.id}" style="width: {$width}px; height: {$height}px;" data-ezgml-view="{$attribute.id}" data-ezgml-lat="{first_set( $latitude, '0.0' )|wash}" data-ezgml-lng="{first_set( $longitude, '0.0' )|wash}"></div>
 {/if}
