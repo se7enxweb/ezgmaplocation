@@ -1,5 +1,14 @@
 CHANGELOG
 
+Version 6.0.10
+-------------------------------------------------------------------------------
+* The map picker of the edit form and the map of the view template run
+  without inline code (a Content Security Policy without 'unsafe-inline'):
+  the code is in design/standard/javascript/ezgmaplocation_map.js, the
+  templates pass the attribute id, the field ids and the translated messages
+  in data attributes, and the buttons have no onclick attributes.
+* extension.xml states the version again (it had stayed at 6.0.7).
+
 Version 6.0.9
 -------------------------------------------------------------------------------
 * The edit form opens when the database returns the coordinates as numbers
