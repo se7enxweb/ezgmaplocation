@@ -1,5 +1,14 @@
 CHANGELOG
 
+Version 6.0.9
+-------------------------------------------------------------------------------
+* The edit form opens when the database returns the coordinates as numbers
+  (SQLite, PDO): the edit template made them strings with concat() first,
+  as the view template does, instead of stopping at implode().
+* The address field has an accessible name, the latitude and longitude
+  labels point to their fields, and the translated button texts and titles
+  are escaped for their attributes.
+
 Version 6.0.8
 -------------------------------------------------------------------------------
 * The address is stored as typed. The edit form passed it through
