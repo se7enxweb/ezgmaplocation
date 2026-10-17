@@ -2,9 +2,10 @@
 {if is_set( $attribute_base )|not}
   {def $attribute_base = 'ContentObjectAttribute'}
 {/if}
-{* Make sure to normalize floats from db  *}
-{def $latitude  = $attribute.content.latitude|explode(',')|implode('.')
-     $longitude = $attribute.content.longitude|explode(',')|implode('.')}
+{* Make sure to normalize floats from db. concat() makes the value a string first: a driver that returns the
+   coordinates as floats (SQLite, PDO) gave explode() no string, and implode() then stopped the edit page *}
+{def $latitude  = concat( $attribute.content.latitude, '' )|explode(',')|implode('.')
+     $longitude = concat( $attribute.content.longitude, '' )|explode(',')|implode('.')}
 <div class="block">
 
 <div class="element">
@@ -145,9 +146,9 @@ else if ( window.attachEvent )
     window.attachEvent('onload', function(){ldelim} eZGmapLocation_MapControl( {$attribute.id}, "{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier}" ) {rdelim} );
 </script>
 
-    <input type="text" id="ezgml-address-{$attribute.id}" size="62" name="{$attribute_base}_data_gmaplocation_address_{$attribute.id}" value="{$attribute.content.address|wash}"/>
-    <input class="button" type="button" id="ezgml-address-button-{$attribute.id}" value="{'Find address'|i18n('extension/ezgmaplocation/datatype')}"/>
-    <input class="button-disabled" type="button" id="ezgml-restore-button-{$attribute.id}" value="{'Restore'|i18n('extension/ezgmaplocation/datatype')}" onclick="javascript:void( null ); return false" disabled="disabled"  title="{'Restores location and address values to what it was on page load.'|i18n('extension/ezgmaplocation/datatype')}" />
+    <input type="text" id="ezgml-address-{$attribute.id}" size="62" aria-label="{'Address'|i18n('extension/ezgmaplocation/datatype')|wash}" name="{$attribute_base}_data_gmaplocation_address_{$attribute.id}" value="{$attribute.content.address|wash}"/>
+    <input class="button" type="button" id="ezgml-address-button-{$attribute.id}" value="{'Find address'|i18n('extension/ezgmaplocation/datatype')|wash}"/>
+    <input class="button-disabled" type="button" id="ezgml-restore-button-{$attribute.id}" value="{'Restore'|i18n('extension/ezgmaplocation/datatype')|wash}" onclick="javascript:void( null ); return false" disabled="disabled"  title="{'Restores location and address values to what it was on page load.'|i18n('extension/ezgmaplocation/datatype')|wash}" />
 
     <input id="ezgml_hidden_address_{$attribute.id}" type="hidden" name="ezgml_hidden_address_{$attribute.id}" value="{$attribute.content.address|wash}" disabled="disabled" />
     <input id="ezgml_hidden_latitude_{$attribute.id}" type="hidden" name="ezgml_hidden_latitude_{$attribute.id}" value="{$latitude}" disabled="disabled" />
@@ -157,17 +158,17 @@ else if ( window.attachEvent )
 
 <div class="element">
   <div class="block">
-    <label>{'Latitude'|i18n('extension/ezgmaplocation/datatype')}:</label>
+    <label for="ezcoa-{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier}_latitude">{'Latitude'|i18n('extension/ezgmaplocation/datatype')}:</label>
     <input id="ezcoa-{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier}_latitude" class="box ezcc-{$attribute.object.content_class.identifier} ezcca-{$attribute.object.content_class.identifier}_{$attribute.contentclass_attribute_identifier}" type="text" name="{$attribute_base}_data_gmaplocation_latitude_{$attribute.id}" value="{$latitude}" />
   </div>
   
   <div class="block">
-    <label>{'Longitude'|i18n('extension/ezgmaplocation/datatype')}:</label>
+    <label for="ezcoa-{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier}_longitude">{'Longitude'|i18n('extension/ezgmaplocation/datatype')}:</label>
     <input id="ezcoa-{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier}_longitude" class="box ezcc-{$attribute.object.content_class.identifier} ezcca-{$attribute.object.content_class.identifier}_{$attribute.contentclass_attribute_identifier}" type="text" name="{$attribute_base}_data_gmaplocation_longitude_{$attribute.id}" value="{$longitude}" />
   </div>
 
   <div class="block">
-    <input class="button-disabled" type="button" id="ezgml-mylocation-button-{$attribute.id}" value="{'My current location'|i18n('extension/ezgmaplocation/datatype')}" onclick="javascript:void( null ); return false" disabled="disabled" title="{'Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!'|i18n('extension/ezgmaplocation/datatype')}" />
+    <input class="button-disabled" type="button" id="ezgml-mylocation-button-{$attribute.id}" value="{'My current location'|i18n('extension/ezgmaplocation/datatype')|wash}" onclick="javascript:void( null ); return false" disabled="disabled" title="{'Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!'|i18n('extension/ezgmaplocation/datatype')|wash}" />
   </div>
 </div>
 
