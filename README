@@ -21,9 +21,10 @@ eZ Publish installation.
 'Setup' tab in the eZ publish admin interface.
 And update the autoload array by clicking "Regenerate autoload arrays for extensions"
 
-4.) Add your GmapsKey to the site.ini under [SiteSettings] like so:
-GMapsKey=<Long string of characters from Google>
-(You can do this per siteaccess if you want)
+4.) Add your Google Maps JavaScript API key to ezgmaplocation.ini [GMapSettings] ApiKey
+(settings/override/ezgmaplocation.ini.append.php, or per siteaccess). Without a key
+the edit form and the view load no Google script and show the coordinates without
+a map. (The old site.ini [SiteSettings] GMapsKey is not read.)
 
 5.) Apply the ezgmaplocation table to your database with the included sql file:
 <eZP root>/extension/ezgmaplocation/sql/mysql/mysql.sql
@@ -86,3 +87,22 @@ results based on how close the nodes are to the given coordinates.
  Also see 'arccosine' parameter in combination with 'as_object', false() to be able to get value to easily calculate distance.
  Example use: user x is 2,5 km away from you. Or Oslo, Norway is 416.8km from Stockholm, Sweden.
 
+
+
+Content Security Policy
+---------------
+With an ApiKey, the edit form and the view template load the Google Maps JavaScript API
+from maps.googleapis.com. A site or administration that sends a Content Security Policy
+(Exponential: site.ini [ContentSecurityPolicy]) has to allow Google's hosts there, for
+example in the siteaccess's site.ini.append.php:
+
+    [ContentSecurityPolicy]
+    AdditionalSources[]=script-src https://*.googleapis.com https://*.gstatic.com *.google.com https://*.ggpht.com *.googleusercontent.com
+    AdditionalSources[]=img-src https://*.googleapis.com https://*.gstatic.com *.google.com *.googleusercontent.com
+    AdditionalSources[]=connect-src https://*.googleapis.com *.google.com https://*.gstatic.com
+    AdditionalSources[]=font-src https://fonts.gstatic.com
+    AdditionalSources[]=style-src https://fonts.googleapis.com
+    AdditionalSources[]=frame-src *.google.com
+    AdditionalSources[]=worker-src blob:
+
+Without an ApiKey nothing from Google is loaded and nothing has to be allowed.

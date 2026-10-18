@@ -10,7 +10,12 @@
 
 <div class="element">
 {run-once}
-<script type="text/javascript" src="//maps.google.com/maps/api/js?key={ezini('GMapSettings', 'ApiKey', 'ezgmaplocation.ini')}&sensor={ezini('GMapSettings', 'UseSensor', 'ezgmaplocation.ini')}"></script>
+{* The Google Maps API only with an API key: Google draws no map and finds no address without one, and the page would
+   load a script from another host for nothing (which a Content Security Policy then has to allow). Without a key the
+   latitude and longitude are entered by hand; the map buttons stay inactive (ezgmaplocation_map.js). *}
+{if ezini( 'GMapSettings', 'ApiKey', 'ezgmaplocation.ini' )|trim|ne( '' )}
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={ezini( 'GMapSettings', 'ApiKey', 'ezgmaplocation.ini' )|trim|urlencode}"></script>
+{/if}
 {ezscript( array( 'ezgmaplocation_map.js' ) )}
 {/run-once}
 

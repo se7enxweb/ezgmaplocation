@@ -1,5 +1,17 @@
 CHANGELOG
 
+Version 6.0.12
+-------------------------------------------------------------------------------
+* The edit form and the view template load the Google Maps JavaScript API
+  only when [GMapSettings] ApiKey is set, from https://maps.googleapis.com
+  with the key URL-encoded. Without a key Google draws no map, so the pages
+  no longer load a script from another host for nothing (an administration
+  with an enforced Content Security Policy blocked it on every page with a
+  map field). Without a key the coordinates are shown without a map and the
+  map buttons stay inactive. The README lists the hosts a Content Security
+  Policy has to allow when a key is set. UseSensor is not used any more.
+* Added tests/ezgmaplocation_maps_api_key_test.php (DB-less).
+
 Version 6.0.11
 -------------------------------------------------------------------------------
 * The maps of the edit form and the view template carry no style attribute
