@@ -60,5 +60,13 @@
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
         <translation>Récupère votre position actuelle si votre navigateur supporte la géolocalisation et si vous autorisez ce site web à y accéder ! Cette fonctionnalité est très précise si votre appareil dispose d&apos;une puce GPS ! Notez cependant qu&apos;il est possible que vous ayez quand même à taper votre adresse manuellement!</translation>
     </message>
+    <message>
+        <source>%address not found</source>
+        <translation>%address introuvable</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Impossible d&apos;obtenir votre position, erreur : %error</translation>
+    </message>
 </context>
 </TS>
