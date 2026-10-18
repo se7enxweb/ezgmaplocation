@@ -27,5 +27,5 @@
 </div>
 
 <label>{'Map'|i18n('extension/ezgmaplocation/datatype')}:</label>
-<div id="ezgml-map-{$attribute.id}" style="width: {$width}px; height: {$height}px;" data-ezgml-view="{$attribute.id}" data-ezgml-lat="{first_set( $latitude, '0.0' )|wash}" data-ezgml-lng="{first_set( $longitude, '0.0' )|wash}"></div>
+<div id="ezgml-map-{$attribute.id}" class="ezgml-map ezgml-map-view" data-ezgml-width="{$width|int}" data-ezgml-height="{$height|int}" data-ezgml-view="{$attribute.id}" data-ezgml-lat="{first_set( $latitude, '0.0' )|wash}" data-ezgml-lng="{first_set( $longitude, '0.0' )|wash}"></div>
 {/if}

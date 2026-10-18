@@ -22,7 +22,7 @@
     <input id="ezgml_hidden_address_{$attribute.id}" type="hidden" name="ezgml_hidden_address_{$attribute.id}" value="{$attribute.content.address|wash}" disabled="disabled" />
     <input id="ezgml_hidden_latitude_{$attribute.id}" type="hidden" name="ezgml_hidden_latitude_{$attribute.id}" value="{$latitude}" disabled="disabled" />
     <input id="ezgml_hidden_longitude_{$attribute.id}" type="hidden" name="ezgml_hidden_longitude_{$attribute.id}" value="{$longitude}" disabled="disabled" />
-    <div id="ezgml-map-{$attribute.id}" style="width: 500px; height: 280px; margin-top: 2px;" data-ezgml-edit="{$attribute.id}" data-ezgml-base="{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base|wash}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier|wash}" data-ezgml-msg-not-found="{'%address not found'|i18n( 'extension/ezgmaplocation/datatype' )|wash}" data-ezgml-msg-location-error="{'Could not get your location, error was: %error'|i18n( 'extension/ezgmaplocation/datatype' )|wash}"></div>
+    <div id="ezgml-map-{$attribute.id}" class="ezgml-map ezgml-map-edit" data-ezgml-edit="{$attribute.id}" data-ezgml-base="{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base|wash}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier|wash}" data-ezgml-msg-not-found="{'%address not found'|i18n( 'extension/ezgmaplocation/datatype' )|wash}" data-ezgml-msg-location-error="{'Could not get your location, error was: %error'|i18n( 'extension/ezgmaplocation/datatype' )|wash}"></div>
 </div>
 
 <div class="element">

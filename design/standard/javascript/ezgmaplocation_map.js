@@ -4,7 +4,8 @@
  * The templates print no inline code (so the pages work under a Content Security Policy without 'unsafe-inline'):
  *   edit: <div id="ezgml-map-<attribute id>" data-ezgml-edit="<attribute id>" data-ezgml-base="<lat/long id base>"
  *              data-ezgml-msg-not-found="..." data-ezgml-msg-location-error="...">
- *   view: <div id="ezgml-map-<attribute id>" data-ezgml-view="<attribute id>" data-ezgml-lat="..." data-ezgml-lng="...">
+ *   view: <div id="ezgml-map-<attribute id>" data-ezgml-view="<attribute id>" data-ezgml-lat="..." data-ezgml-lng="..."
+ *              data-ezgml-width="<px>" data-ezgml-height="<px>">  (the size; no style="" attribute)
  * Every such map is set up once, on window load (after the Google Maps API script), as before.
  * eZGmapLocation_MapControl() and eZGmapLocation_MapView() stay global functions for override templates that call them.
  */
@@ -165,7 +166,7 @@
     // sets up every map of the page that is not set up yet; a template may print this file more than once
     window.eZGmapLocation_setUpMaps = function ()
     {
-        var i, el, id, nodes;
+        var i, el, id, nodes, w, h;
         nodes = document.querySelectorAll( '[data-ezgml-edit]' );
         for ( i = 0; i < nodes.length; i++ )
         {
@@ -193,6 +194,14 @@
             if ( el.getAttribute( 'data-ezgml-ready' ) )
                 continue;
             el.setAttribute( 'data-ezgml-ready', '1' );
+            // the size a view template was given ($width, $height); stylesheets/ezgmaplocation.css draws the default
+            // 500 x 280 and keeps the map within its column
+            w = parseInt( el.getAttribute( 'data-ezgml-width' ), 10 );
+            h = parseInt( el.getAttribute( 'data-ezgml-height' ), 10 );
+            if ( w > 0 )
+                el.style.width = w + 'px';
+            if ( h > 0 )
+                el.style.height = h + 'px';
             if ( typeof google === 'undefined' || !google.maps )
                 continue;
             window.eZGmapLocation_MapView( el.getAttribute( 'data-ezgml-view' ),

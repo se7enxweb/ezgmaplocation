@@ -1,0 +1,12 @@
+/*
+ * ezgmaplocation: the map of the edit form (the picker) and of the view template. Loaded by
+ * settings/design.ini.append.php [StylesheetSettings] (BackendCSSFileList and FrontendCSSFileList) and bundled by the
+ * ezjscore packer. The templates carry no style="" attribute: a Content-Security-Policy without 'unsafe-inline' for
+ * style-src drops it (tests/ezgmaplocation_inline_css_test.php).
+ *
+ * The default size is 500 x 280 pixels, never wider than its column. A view template given another $width or $height
+ * passes them in data-ezgml-width and data-ezgml-height, and design/standard/javascript/ezgmaplocation_map.js sets
+ * them on the element before it draws the map.
+ */
+.ezgml-map { width: 500px; max-width: 100%; height: 280px; }
+.ezgml-map-edit { margin-top: 2px; }
