@@ -1,5 +1,13 @@
 CHANGELOG
 
+Version 6.0.11
+-------------------------------------------------------------------------------
+* The maps of the edit form and the view template carry no style attribute
+  (a Content Security Policy without 'unsafe-inline' for style-src): the
+  default size is in design/standard/stylesheets/ezgmaplocation.css, loaded by
+  design.ini [StylesheetSettings]; a view template given another $width or
+  $height passes them in data attributes the map script applies.
+
 Version 6.0.10
 -------------------------------------------------------------------------------
 * The map picker of the edit form and the map of the view template run
