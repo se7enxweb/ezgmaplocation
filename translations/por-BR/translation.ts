@@ -17,6 +17,14 @@
         <translation>Latitude/Longitude inválida.</translation>
     </message>
     <message>
+        <source>%address not found</source>
+        <translation>%address não encontrado</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Não foi possível obter sua localização; o erro foi: %error</translation>
+    </message>
+    <message>
         <source>Find address</source>
         <translation>Encontrar endereço</translation>
     </message>
@@ -42,7 +50,7 @@
     </message>
     <message>
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
-        <translation>Encontra sua posição atual atual se o seu navegador suportar e permiter GeoLocation. Será mais eficiente se teu dispositivo de acesso à Internet possue gps integrado. Leve em consideração que também pode ser necessário que preencha o endereço manualmente!</translation>
+        <translation>Obtém sua posição atual se o seu navegador suportar geolocalização e você conceder acesso a este site! É mais preciso se o seu dispositivo tiver GPS integrado! Observe também que talvez você ainda precise digitar o endereço manualmente!</translation>
     </message>
     <message>
         <source>Address</source>

@@ -52,5 +52,13 @@
         <source>Invalid Latitude/Longitude input.</source>
         <translation>Inserimento della Latitudine/Longitudine non valido.</translation>
     </message>
+    <message>
+        <source>%address not found</source>
+        <translation>%address non trovato</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Impossibile determinare la tua posizione, errore: %error</translation>
+    </message>
 </context>
 </TS>
