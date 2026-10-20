@@ -52,5 +52,13 @@
         <source>Invalid Latitude/Longitude input.</source>
         <translation>Neispravna geografska širina/duljina.</translation>
     </message>
+    <message>
+        <source>%address not found</source>
+        <translation>Nije pronađeno: %address</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Nije moguće dohvatiti vašu lokaciju, pogreška: %error</translation>
+    </message>
 </context>
 </TS>

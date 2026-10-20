@@ -33,11 +33,11 @@
     </message>
     <message>
         <source>Restores location and address values to what it was on page load.</source>
-        <translation>Ripristina i valori della località e dell&apos;indirizzo a quelli iniziali del caricamento della pagina.</translation>
+        <translation>Ripristina i valori della località e dell'indirizzo a quelli iniziali del caricamento della pagina.</translation>
     </message>
     <message>
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
-        <translation>Prende la tua posizione attuale se il tuo browser supporta la GeoLocation e se ne abiliti l&apos;accesso a questo sito web! Ancora più accurato se hai installato un gps nel tuo dispositivo internet! Considera inoltre che potresti ancora dover inserire manualmente l&apos;indirizzo!</translation>
+        <translation>Prende la tua posizione attuale se il tuo browser supporta la GeoLocation e se ne abiliti l'accesso a questo sito web! Ancora più accurato se hai installato un gps nel tuo dispositivo internet! Considera inoltre che potresti ancora dover inserire manualmente l'indirizzo!</translation>
     </message>
     <message>
         <source>GMap Location</source>
@@ -46,11 +46,19 @@
     </message>
     <message>
         <source>Missing Latitude/Longitude input.</source>
-        <translation>Manca l&apos;inserimento della Latitudine/Longitudine.</translation>
+        <translation>Manca l'inserimento della Latitudine/Longitudine.</translation>
     </message>
     <message>
         <source>Invalid Latitude/Longitude input.</source>
         <translation>Inserimento della Latitudine/Longitudine non valido.</translation>
+    </message>
+    <message>
+        <source>%address not found</source>
+        <translation>%address non trovato</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Impossibile ottenere la tua posizione, errore: %error</translation>
     </message>
 </context>
 </TS>

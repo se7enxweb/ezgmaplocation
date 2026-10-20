@@ -4,19 +4,6 @@
 <context>
     <name>extension/ezgmaplocation/datatype</name>
     <message>
-        <source>GMap Location</source>
-        <comment>Datatype name</comment>
-        <translation type="unfinished">GMap lokasjon</translation>
-    </message>
-    <message>
-        <source>Missing Latitude/Longitude input.</source>
-        <translation type="unfinished">Mangler Lengdegrad/Breddegrad verdier.</translation>
-    </message>
-    <message>
-        <source>Invalid Latitude/Longitude input.</source>
-        <translation type="unfinished">Ugyldig Lengdegrad/Breddegrad verdier.</translation>
-    </message>
-    <message>
         <source>Latitude</source>
         <translation>Breddegrad</translation>
     </message>
@@ -25,16 +12,8 @@
         <translation>Lengdegrad</translation>
     </message>
     <message>
-        <source>Update Location</source>
-        <translation type="obsolete">Oppdater lokasjon</translation>
-    </message>
-    <message>
         <source>Restore</source>
         <translation>Gjenopprett</translation>
-    </message>
-    <message>
-        <source>Update values</source>
-        <translation type="obsolete">Oppdater verdier</translation>
     </message>
     <message>
         <source>Find address</source>
@@ -54,11 +33,32 @@
     </message>
     <message>
         <source>Restores location and address values to what it was on page load.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilbakestiller plassering og adresse til verdiene da siden ble lastet.</translation>
     </message>
     <message>
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
-        <translation type="unfinished"></translation>
+        <translation>Henter din nåværende posisjon hvis nettleseren din støtter geolokasjon og du gir dette nettstedet tilgang til den! Mest nøyaktig hvis enheten din har innebygd GPS. Merk at du fortsatt kan måtte skrive inn adressen manuelt!</translation>
+    </message>
+    <message>
+        <source>GMap Location</source>
+        <comment>Datatype name</comment>
+        <translation>GMap-plassering</translation>
+    </message>
+    <message>
+        <source>Missing Latitude/Longitude input.</source>
+        <translation>Breddegrad/lengdegrad mangler.</translation>
+    </message>
+    <message>
+        <source>Invalid Latitude/Longitude input.</source>
+        <translation>Ugyldig inndata for breddegrad/lengdegrad.</translation>
+    </message>
+    <message>
+        <source>%address not found</source>
+        <translation>Fant ikke %address</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Kunne ikke hente posisjonen din, feilen var: %error</translation>
     </message>
 </context>
 </TS>
