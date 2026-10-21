@@ -5,15 +5,15 @@
     <name>extension/ezgmaplocation/datatype</name>
     <message>
         <source>Latitude</source>
-        <translation>Geografska širina</translation>
+        <translation>Zemljopisna širina</translation>
     </message>
     <message>
         <source>Longitude</source>
-        <translation>Geografska duljina</translation>
+        <translation>Zemljopisna dužina</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation>Početne vrijednosti</translation>
+        <translation>Vrati</translation>
     </message>
     <message>
         <source>Find address</source>
@@ -29,28 +29,36 @@
     </message>
     <message>
         <source>My current location</source>
-        <translation>Moja trenutna pozicija</translation>
+        <translation>Moja trenutačna lokacija</translation>
     </message>
     <message>
         <source>Restores location and address values to what it was on page load.</source>
-        <translation>Vraća poziciju i adresu na vrijednosti koje su bile prilikom učitavanja stranice.</translation>
+        <translation>Vraća vrijednosti lokacije i adrese na one pri učitavanju stranice.</translation>
     </message>
     <message>
         <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
-        <translation>Dohvaća vašu trenutnu poziciju ako vaš preglednik podržava geolokaciju i ako dozvolite ovoj stranici pristup geolokaciji! Pozicija će biti najtočnija ako imate ugrađen GPS u vašem uređaju. Također, može se desiti da adresu morate upisati ručno!</translation>
+        <translation>Dohvaća vašu trenutačnu lokaciju ako vaš preglednik podržava geolokaciju i ako ovom web-mjestu dopustite pristup njoj! Najtočnije je ako vaš uređaj ima ugrađen GPS! Imajte na umu da ćete adresu možda ipak morati unijeti ručno!</translation>
     </message>
     <message>
         <source>GMap Location</source>
         <comment>Datatype name</comment>
-        <translation>GMap pozicija</translation>
+        <translation>GMap lokacija</translation>
     </message>
     <message>
         <source>Missing Latitude/Longitude input.</source>
-        <translation>Nedostaje geografska širina/duljina.</translation>
+        <translation>Nedostaje unos zemljopisne širine/dužine.</translation>
     </message>
     <message>
         <source>Invalid Latitude/Longitude input.</source>
-        <translation>Neispravna geografska širina/duljina.</translation>
+        <translation>Nevažeći unos zemljopisne širine/dužine.</translation>
+    </message>
+    <message>
+        <source>%address not found</source>
+        <translation>%address nije pronađeno</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>Nije moguće utvrditi vašu lokaciju, pogreška: %error</translation>
     </message>
     <message>
         <source>%address not found</source>

@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>My current location</source>
-        <translation>Min nåværende lokasjon</translation>
+        <translation>Min nåværende posisjon</translation>
     </message>
     <message>
         <source>Restores location and address values to what it was on page load.</source>
