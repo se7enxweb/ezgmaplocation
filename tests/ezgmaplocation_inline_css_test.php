@@ -58,7 +58,7 @@ $view = isset( $templates['design/standard/templates/content/datatype/view/ezgma
 $script = (string)@file_get_contents( $root . '/design/standard/javascript/ezgmaplocation_map.js' );
 gcCheck( preg_match( '/class="ezgml-map ezgml-map-edit"/', $edit ) && preg_match( '/class="ezgml-map ezgml-map-view"/', $view )
          && strpos( $view, 'data-ezgml-width="{$width|int}"' ) !== false && strpos( $view, 'data-ezgml-height="{$height|int}"' ) !== false
-         && strpos( $script, "getAttribute( 'data-ezgml-width' )" ) !== false && strpos( $script, "getAttribute( 'data-ezgml-height' )" ) !== false,
+         && strpos( $script, "attr('data-ezgml-width')" ) !== false && strpos( $script, "attr('data-ezgml-height')" ) !== false,
          'GC-03 the maps carry .ezgml-map and the view passes its size to the script' );
 
 echo $failures ? "FAIL: $failures\n" : "PASS: all\n";

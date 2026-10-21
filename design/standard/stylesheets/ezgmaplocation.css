@@ -10,3 +10,5 @@
  */
 .ezgml-map { width: 500px; max-width: 100%; height: 280px; }
 .ezgml-map-edit { margin-top: 2px; }
+.ezgml-map[hidden], .ezgml-osm[hidden] { display: none; }
+.ezgml-map-error { margin: 2px 0; }

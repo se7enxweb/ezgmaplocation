@@ -7,27 +7,29 @@
 {def $latitude  = concat( $attribute.content.latitude, '' )|explode(',')|implode('.')
      $longitude = concat( $attribute.content.longitude, '' )|explode(',')|implode('.')}
 <div class="block">
+{def $gml_key = ezini( 'GMapSettings', 'ApiKey', 'ezgmaplocation.ini' )|trim
+     $gml_attrs = concat( ' data-ezgml-key="', $gml_key|wash, '" data-ezgml-map-id="', ezini( 'GMapSettings', 'MapId', 'ezgmaplocation.ini' )|trim|wash,
+                          '" data-ezgml-api-version="', ezini( 'GMapSettings', 'ApiVersion', 'ezgmaplocation.ini' )|trim|wash,
+                          '" data-ezgml-language="', ezini( 'GMapSettings', 'Language', 'ezgmaplocation.ini' )|trim|wash,
+                          '" data-ezgml-region="', ezini( 'GMapSettings', 'Region', 'ezgmaplocation.ini' )|trim|wash,
+                          '" data-ezgml-msg-map-error="', 'The map could not be loaded. Enter the latitude and longitude by hand.'|i18n( 'extension/ezgmaplocation/datatype' )|wash, '"' )}
+{run-once}
+{* expui (Exp.$ is jQuery 4) runs the map: no inline script. The Google Maps API is added by the script itself, and only
+   with an API key (see doc/SETTINGS.md); without one the coordinates and an OpenStreetMap link are shown. *}
+{ezscript_require( array( 'exp::core', 'ezgmaplocation_map.js' ) )}
+{/run-once}
 
 <div class="element">
-{run-once}
-{* The Google Maps API only with an API key: Google draws no map and finds no address without one, and the page would
-   load a script from another host for nothing (which a Content Security Policy then has to allow). Without a key the
-   latitude and longitude are entered by hand; the map buttons stay inactive (ezgmaplocation_map.js). *}
-{if ezini( 'GMapSettings', 'ApiKey', 'ezgmaplocation.ini' )|trim|ne( '' )}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={ezini( 'GMapSettings', 'ApiKey', 'ezgmaplocation.ini' )|trim|urlencode}"></script>
-{/if}
-{ezscript( array( 'ezgmaplocation_map.js' ) )}
-{/run-once}
 
 
     <input type="text" id="ezgml-address-{$attribute.id}" size="62" aria-label="{'Address'|i18n('extension/ezgmaplocation/datatype')|wash}" name="{$attribute_base}_data_gmaplocation_address_{$attribute.id}" value="{$attribute.content.address|wash}"/>
-    <input class="button" type="button" id="ezgml-address-button-{$attribute.id}" value="{'Find address'|i18n('extension/ezgmaplocation/datatype')|wash}"/>
-    <input class="button-disabled" type="button" id="ezgml-restore-button-{$attribute.id}" value="{'Restore'|i18n('extension/ezgmaplocation/datatype')|wash}" disabled="disabled"  title="{'Restores location and address values to what it was on page load.'|i18n('extension/ezgmaplocation/datatype')|wash}" />
+    <input class="button" type="button" id="ezgml-address-button-{$attribute.id}" value="{'Find address'|i18n('extension/ezgmaplocation/datatype')|wash}"{if $gml_key|eq( '' )} hidden="hidden"{/if}/>
+    <input class="button-disabled" type="button" id="ezgml-restore-button-{$attribute.id}" value="{'Restore'|i18n('extension/ezgmaplocation/datatype')|wash}" disabled="disabled"{if $gml_key|eq( '' )} hidden="hidden"{/if} title="{'Restores location and address values to what it was on page load.'|i18n('extension/ezgmaplocation/datatype')|wash}" />
 
     <input id="ezgml_hidden_address_{$attribute.id}" type="hidden" name="ezgml_hidden_address_{$attribute.id}" value="{$attribute.content.address|wash}" disabled="disabled" />
     <input id="ezgml_hidden_latitude_{$attribute.id}" type="hidden" name="ezgml_hidden_latitude_{$attribute.id}" value="{$latitude}" disabled="disabled" />
     <input id="ezgml_hidden_longitude_{$attribute.id}" type="hidden" name="ezgml_hidden_longitude_{$attribute.id}" value="{$longitude}" disabled="disabled" />
-    <div id="ezgml-map-{$attribute.id}" class="ezgml-map ezgml-map-edit" data-ezgml-edit="{$attribute.id}" data-ezgml-base="{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base|wash}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier|wash}" data-ezgml-msg-not-found="{'%address not found'|i18n( 'extension/ezgmaplocation/datatype' )|wash}" data-ezgml-msg-location-error="{'Could not get your location, error was: %error'|i18n( 'extension/ezgmaplocation/datatype' )|wash}"></div>
+    <div id="ezgml-map-{$attribute.id}" class="ezgml-map ezgml-map-edit" data-exp-gmaplocation="edit"{if $gml_key|eq( '' )} hidden="hidden"{/if}{$gml_attrs} data-ezgml-base="{if ne( $attribute_base, 'ContentObjectAttribute' )}{$attribute_base|wash}-{/if}{$attribute.contentclassattribute_id}_{$attribute.contentclass_attribute_identifier|wash}" data-ezgml-msg-not-found="{'%address not found'|i18n( 'extension/ezgmaplocation/datatype' )|wash}" data-ezgml-msg-location-error="{'Could not get your location, error was: %error'|i18n( 'extension/ezgmaplocation/datatype' )|wash}"></div>
 </div>
 
 <div class="element">
@@ -42,7 +44,11 @@
   </div>
 
   <div class="block">
-    <input class="button-disabled" type="button" id="ezgml-mylocation-button-{$attribute.id}" value="{'My current location'|i18n('extension/ezgmaplocation/datatype')|wash}" disabled="disabled" title="{'Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!'|i18n('extension/ezgmaplocation/datatype')|wash}" />
+    <a id="ezgml-osm-{$attribute.id}" class="ezgml-osm" href="https://www.openstreetmap.org/?mlat={$latitude|urlencode}&amp;mlon={$longitude|urlencode}#map=15/{$latitude|urlencode}/{$longitude|urlencode}" target="_blank" rel="noopener noreferrer"{if or( $latitude|eq( '' ), and( $latitude|eq( '0' ), $longitude|eq( '0' ) ) )} hidden="hidden"{/if}>{'Open in OpenStreetMap'|i18n('extension/ezgmaplocation/datatype')|wash}</a>
+  </div>
+
+  <div class="block">
+    <input class="button-disabled" type="button" id="ezgml-mylocation-button-{$attribute.id}" value="{'My current location'|i18n('extension/ezgmaplocation/datatype')|wash}" disabled="disabled"{if $gml_key|eq( '' )} hidden="hidden"{/if} title="{'Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!'|i18n('extension/ezgmaplocation/datatype')|wash}" />
   </div>
 </div>
 

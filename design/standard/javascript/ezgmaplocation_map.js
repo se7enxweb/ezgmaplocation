@@ -1,217 +1,249 @@
 /**
  * ezgmaplocation: the map picker of the edit form and the map of the view template.
  *
- * The templates print no inline code (so the pages work under a Content Security Policy without 'unsafe-inline'):
- *   edit: <div id="ezgml-map-<attribute id>" data-ezgml-edit="<attribute id>" data-ezgml-base="<lat/long id base>"
- *              data-ezgml-msg-not-found="..." data-ezgml-msg-location-error="...">
- *   view: <div id="ezgml-map-<attribute id>" data-ezgml-view="<attribute id>" data-ezgml-lat="..." data-ezgml-lng="..."
- *              data-ezgml-width="<px>" data-ezgml-height="<px>">  (the size; no style="" attribute)
- * Every such map is set up once, on window load (after the Google Maps API script), as before.
- * eZGmapLocation_MapControl() and eZGmapLocation_MapView() stay global functions for override templates that call them.
+ * Built on expui (Exp.$ is jQuery 4; load it with {ezscript_require( array( 'exp::core', 'ezgmaplocation_map.js' ) )}).
+ * No inline code, no eval: the templates print only data attributes, and this file adds Google's script itself, as a
+ * script element with a src (the "dynamic library import" bootstrap, loading=async), so a Content Security Policy
+ * needs script-src for https://maps.googleapis.com and nothing else for scripts (see doc/CSP.md).
+ *
+ *   edit: <div id="ezgml-map-<attribute id>" data-exp-gmaplocation="edit" data-ezgml-base="<lat/long id base>"
+ *              data-ezgml-key data-ezgml-map-id data-ezgml-language data-ezgml-region
+ *              data-ezgml-msg-not-found data-ezgml-msg-location-error data-ezgml-msg-map-error>
+ *   view: <div id="ezgml-map-<attribute id>" data-exp-gmaplocation="view" data-ezgml-lat data-ezgml-lng
+ *              data-ezgml-width data-ezgml-height data-ezgml-key data-ezgml-map-id ...>
+ *
+ * With a Map ID the markers are AdvancedMarkerElement (the classic google.maps.Marker is deprecated and takes no
+ * Map ID styling); without one the classic marker is the fallback. Without an API key no Google script is loaded:
+ * the coordinate fields and an OpenStreetMap link remain (the template renders them), the map element stays hidden.
+ * Addresses are found with the Geocoding library (google.maps.Geocoder, promise form).
  */
-(function ()
-{
-    if ( window.eZGmapLocation_MapControl && window.eZGmapLocation_MapView && window.eZGmapLocation_setUpMaps )
-        return;
+(function (window, document) {
+    'use strict';
 
-    var messages = {};
+    var Exp = window.Exp;
+    if (!Exp || !Exp.$) { return; }
+    var $ = Exp.$;
+    var ZOOM_MAX = 13;
+    var loading = null;
 
-    function message( attributeId, key, fallback )
-    {
-        var m = messages[attributeId];
-        return m && m[key] ? m[key] : fallback;
+    /** The Google Maps JavaScript API, once per page: resolves with google.maps, rejects when it cannot load. */
+    function loadGoogle(opt) {
+        if (window.google && window.google.maps && window.google.maps.importLibrary) {
+            return Promise.resolve(window.google.maps);
+        }
+        if (loading) { return loading; }
+        loading = new Promise(function (resolve, reject) {
+            var params = { key: opt.key, v: opt.version || 'weekly', loading: 'async' };
+            if (opt.language) { params.language = opt.language; }
+            if (opt.region) { params.region = opt.region; }
+            var query = Object.keys(params).map(function (k) {
+                return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+            }).join('&');
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://maps.googleapis.com/maps/api/js?' + query;
+            script.onload = function () {
+                if (window.google && window.google.maps && window.google.maps.importLibrary) {
+                    resolve(window.google.maps);
+                } else {
+                    reject(new Error('The Google Maps API did not start'));
+                }
+            };
+            script.onerror = function () { reject(new Error('The Google Maps script could not be loaded')); };
+            document.head.appendChild(script);
+        });
+        loading.catch(function () { loading = null; });
+        return loading;
     }
 
-    window.eZGmapLocation_MapControl = function ( attributeId, latLongAttributeBase )
-    {
-        var mapid = 'ezgml-map-' + attributeId;
-        var latid  = 'ezcoa-' + latLongAttributeBase + '_latitude';
-        var longid = 'ezcoa-' + latLongAttributeBase + '_longitude';
-        var geocoder = null;
-        var addressid = 'ezgml-address-' + attributeId;
-        var zoommax = 13;
+    // Google calls this when the key is refused (wrong key, API not enabled, referrer not allowed, billing)
+    var authListeners = [];
+    window.gm_authFailure = function () { authListeners.forEach(function (fn) { fn(); }); };
 
-        var showAddress = function ()
-        {
-            var address = document.getElementById( addressid ).value;
-            if ( geocoder )
-            {
-                geocoder.geocode( { 'address': address }, function ( results, status )
-                {
-                    if ( status == google.maps.GeocoderStatus.OK )
-                    {
-                        map.setOptions( { center: results[0].geometry.location, zoom: zoommax } );
-                        marker.setPosition( results[0].geometry.location );
-                        updateLatLngFields( results[0].geometry.location );
-                    }
-                    else
-                    {
-                        alert( message( attributeId, 'notFound', '%address not found' ).replace( '%address', address ) );
-                    }
-                } );
+    /** Reads the element's settings. */
+    function settings($el) {
+        var d = function (name) { return $el.attr('data-ezgml-' + name) || ''; };
+        return { key: d('key'), mapId: d('map-id'), language: d('language'), region: d('region'), version: d('api-version') };
+    }
+
+    function colorScheme() {
+        var root = document.documentElement, theme = root.getAttribute('data-a4-theme') || root.getAttribute('data-theme');
+        if (theme === 'dark') { return 'DARK'; }
+        if (theme === 'light') { return 'LIGHT'; }
+        return 'FOLLOW_SYSTEM';
+    }
+
+    /** The libraries the map needs: maps, marker (with a Map ID) and geocoding (the edit form). */
+    function libraries(opt, edit) {
+        var wanted = [window.google.maps.importLibrary('maps')];
+        wanted.push(opt.mapId ? window.google.maps.importLibrary('marker') : Promise.resolve(null));
+        wanted.push(edit ? window.google.maps.importLibrary('geocoding') : Promise.resolve(null));
+        return Promise.all(wanted).then(function (l) { return { maps: l[0], marker: l[1], geocoding: l[2] }; });
+    }
+
+    function lat(p) { return typeof p.lat === 'function' ? p.lat() : Number(p.lat); }
+    function lng(p) { return typeof p.lng === 'function' ? p.lng() : Number(p.lng); }
+
+    /** A marker: AdvancedMarkerElement with a Map ID, the classic marker without. */
+    function makeMarker(gm, libs, opt, map, position, draggable) {
+        if (opt.mapId && libs.marker && libs.marker.AdvancedMarkerElement) {
+            return { advanced: true, m: new libs.marker.AdvancedMarkerElement({ map: map, position: position, gmpDraggable: draggable, title: '' }) };
+        }
+        return { advanced: false, m: new gm.Marker({ map: map, position: position, draggable: draggable }) };
+    }
+    function setMarker(marker, position) {
+        if (marker.advanced) { marker.m.position = position; } else { marker.m.setPosition(position); }
+    }
+    function onDragEnd(marker, fn) {
+        marker.m.addListener('dragend', function () {
+            var p = marker.advanced ? marker.m.position : marker.m.getPosition();
+            fn({ lat: lat(p), lng: lng(p) });
+        });
+    }
+
+    function mapFailed($el, text) {
+        $el.attr('hidden', 'hidden');
+        var $note = $('<p class="ezgml-map-error" role="status"></p>').text(text);
+        $el.after($note);
+        if (window.console) { window.console.warn('ezgmaplocation: ' + text); }
+    }
+
+    function osmUrl(la, lo) {
+        return 'https://www.openstreetmap.org/?mlat=' + encodeURIComponent(la) + '&mlon=' + encodeURIComponent(lo)
+            + '#map=15/' + encodeURIComponent(la) + '/' + encodeURIComponent(lo);
+    }
+
+    function initView($el) {
+        var opt = settings($el);
+        var w = parseInt($el.attr('data-ezgml-width'), 10), h = parseInt($el.attr('data-ezgml-height'), 10);
+        if (w > 0) { $el.css('width', w + 'px'); }
+        if (h > 0) { $el.css('height', h + 'px'); }
+        if (!opt.key) { return; } // the template shows the coordinates and the OpenStreetMap link
+        var la = parseFloat($el.attr('data-ezgml-lat')) || 0, lo = parseFloat($el.attr('data-ezgml-lng')) || 0;
+        var has = !!(la || lo);
+        var failed = function () { mapFailed($el, $el.attr('data-ezgml-msg-map-error') || 'The map could not be loaded.'); };
+        authListeners.push(failed);
+        loadGoogle(opt).then(function (gm) {
+            return libraries(opt, false).then(function (libs) {
+                var center = { lat: la, lng: lo };
+                var mapOptions = { center: center, zoom: has ? ZOOM_MAX : 0, gestureHandling: 'cooperative' };
+                if (opt.mapId) { mapOptions.mapId = opt.mapId; mapOptions.colorScheme = colorScheme(); }
+                var map = new libs.maps.Map($el[0], mapOptions);
+                makeMarker(gm, libs, opt, map, center, false);
+            });
+        }).catch(failed);
+    }
+
+    function initEdit($el) {
+        var opt = settings($el);
+        var id = ($el.attr('id') || '').replace('ezgml-map-', '');
+        var base = $el.attr('data-ezgml-base');
+        var $lat = $('#ezcoa-' + base + '_latitude'), $lng = $('#ezcoa-' + base + '_longitude');
+        var $address = $('#ezgml-address-' + id), $find = $('#ezgml-address-button-' + id);
+        var $restore = $('#ezgml-restore-button-' + id), $here = $('#ezgml-mylocation-button-' + id);
+        var $osm = $('#ezgml-osm-' + id);
+        var msg = function (name, fallback) { return $el.attr('data-ezgml-msg-' + name) || fallback; };
+
+        function syncLink() {
+            var la = parseFloat($lat.val()), lo = parseFloat($lng.val());
+            if ($osm.length && isFinite(la) && isFinite(lo) && (la || lo)) {
+                $osm.attr('href', osmUrl(la, lo)).prop('hidden', false);
+            } else {
+                $osm.prop('hidden', true);
             }
-        };
-
-        var updateLatLngFields = function ( point )
-        {
-            document.getElementById( latid ).value = point.lat();
-            document.getElementById( longid ).value = point.lng();
-            document.getElementById( 'ezgml-restore-button-' + attributeId ).disabled = false;
-            document.getElementById( 'ezgml-restore-button-' + attributeId ).className = 'button';
-        };
-
-        var restoretLatLngFields = function ()
-        {
-            document.getElementById( latid ).value     = document.getElementById( 'ezgml_hidden_latitude_' + attributeId ).value;
-            document.getElementById( longid ).value    = document.getElementById( 'ezgml_hidden_longitude_' + attributeId ).value;
-            document.getElementById( addressid ).value = document.getElementById( 'ezgml_hidden_address_' + attributeId ).value;
-            if ( document.getElementById( latid ).value && document.getElementById( latid ).value != 0 )
-            {
-                var point = new google.maps.LatLng( document.getElementById( latid ).value, document.getElementById( longid ).value );
-                marker.setPosition( point );
-                map.panTo( point );
-            }
-            document.getElementById( 'ezgml-restore-button-' + attributeId ).disabled = true;
-            document.getElementById( 'ezgml-restore-button-' + attributeId ).className = 'button-disabled';
-            return false;
-        };
-
-        var getUserPosition = function ()
-        {
-            navigator.geolocation.getCurrentPosition( function ( position )
-            {
-                var location = '';
-                var point = new google.maps.LatLng( position.coords.latitude, position.coords.longitude );
-
-                if ( navigator.geolocation.type == 'Gears' && position.gearsAddress )
-                    location = [position.gearsAddress.city, position.gearsAddress.region, position.gearsAddress.country].join( ', ' );
-                else if ( navigator.geolocation.type == 'ClientLocation' )
-                    location = [position.address.city, position.address.region, position.address.country].join( ', ' );
-
-                document.getElementById( addressid ).value = location;
-                map.setOptions( { zoom: zoommax, center: point } );
-                marker.setPosition( point );
-                updateLatLngFields( point );
-            },
-            function ( e )
-            {
-                alert( message( attributeId, 'locationError', 'Could not get your location, error was: %error' ).replace( '%error', e.message ) );
-            },
-            { 'gearsRequestAddress': true } );
-        };
-
-        var startPoint = null;
-        var zoom = 0;
-        var map = null;
-        var marker = null;
-
-        if ( document.getElementById( latid ).value && document.getElementById( latid ).value != 0 )
-        {
-            startPoint = new google.maps.LatLng( document.getElementById( latid ).value, document.getElementById( longid ).value );
-            zoom = zoommax;
         }
-        else
-        {
-            startPoint = new google.maps.LatLng( 0, 0 );
-        }
+        $lat.add($lng).on('input change', syncLink);
+        syncLink();
 
-        map = new google.maps.Map( document.getElementById( mapid ), { center: startPoint, zoom: zoom, mapTypeId: google.maps.MapTypeId.ROADMAP } );
-        marker = new google.maps.Marker( { map: map, position: startPoint, draggable: true } );
-        google.maps.event.addListener( marker, 'dragend', function ( event )
-        {
-            updateLatLngFields( event.latLng );
-            document.getElementById( addressid ).value = '';
-        } );
+        if (!opt.key) { return; } // no key: the fields and the OpenStreetMap link are the editor
 
-        geocoder = new google.maps.Geocoder();
-        google.maps.event.addListener( map, 'click', function ( event )
-        {
-            marker.setPosition( event.latLng );
-            map.panTo( event.latLng );
-            updateLatLngFields( event.latLng );
-            document.getElementById( addressid ).value = '';
-        } );
+        var failed = function () { mapFailed($el, msg('map-error', 'The map could not be loaded.')); };
+        authListeners.push(failed);
 
-        document.getElementById( 'ezgml-address-button-' + attributeId ).onclick = showAddress;
-        document.getElementById( 'ezgml-restore-button-' + attributeId ).onclick = restoretLatLngFields;
+        loadGoogle(opt).then(function (gm) {
+            return libraries(opt, true).then(function (libs) {
+                var geocoder = new libs.geocoding.Geocoder();
+                var la = parseFloat($lat.val()), lo = parseFloat($lng.val());
+                var has = isFinite(la) && isFinite(lo) && (la || lo);
+                var start = { lat: has ? la : 0, lng: has ? lo : 0 };
+                var mapOptions = { center: start, zoom: has ? ZOOM_MAX : 0, gestureHandling: 'cooperative' };
+                if (opt.mapId) { mapOptions.mapId = opt.mapId; mapOptions.colorScheme = colorScheme(); }
+                var map = new libs.maps.Map($el[0], mapOptions);
+                var marker = makeMarker(gm, libs, opt, map, start, true);
 
-        if ( navigator.geolocation )
-        {
-            document.getElementById( 'ezgml-mylocation-button-' + attributeId ).onclick = getUserPosition;
-            document.getElementById( 'ezgml-mylocation-button-' + attributeId ).className = 'button';
-            document.getElementById( 'ezgml-mylocation-button-' + attributeId ).disabled = false;
-        }
+                function update(point) {
+                    $lat.val(point.lat);
+                    $lng.val(point.lng);
+                    $restore.prop('disabled', false).attr('class', 'button');
+                    syncLink();
+                }
+                function place(point, zoom) {
+                    setMarker(marker, point);
+                    if (zoom) { map.setOptions({ center: point, zoom: zoom }); } else { map.panTo(point); }
+                }
+
+                onDragEnd(marker, function (point) { update(point); $address.val(''); });
+                map.addListener('click', function (event) {
+                    var point = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+                    place(point);
+                    update(point);
+                    $address.val('');
+                });
+
+                $find.prop('disabled', false).off('click.ezgml').on('click.ezgml', function (e) {
+                    e.preventDefault();
+                    var address = String($address.val()).trim();
+                    if (!address) { return; }
+                    geocoder.geocode({ address: address }).then(function (response) {
+                        var loc = response.results[0].geometry.location;
+                        var point = { lat: loc.lat(), lng: loc.lng() };
+                        place(point, ZOOM_MAX);
+                        update(point);
+                    }).catch(function () {
+                        window.alert(msg('not-found', '%address not found').replace('%address', address));
+                    });
+                });
+
+                $restore.off('click.ezgml').on('click.ezgml', function (e) {
+                    e.preventDefault();
+                    $lat.val($('#ezgml_hidden_latitude_' + id).val());
+                    $lng.val($('#ezgml_hidden_longitude_' + id).val());
+                    $address.val($('#ezgml_hidden_address_' + id).val());
+                    var rl = parseFloat($lat.val()), ro = parseFloat($lng.val());
+                    if (isFinite(rl) && isFinite(ro) && (rl || ro)) { place({ lat: rl, lng: ro }); }
+                    $restore.prop('disabled', true).attr('class', 'button-disabled');
+                    syncLink();
+                });
+
+                if (navigator.geolocation) {
+                    $here.prop('disabled', false).attr('class', 'button').off('click.ezgml').on('click.ezgml', function (e) {
+                        e.preventDefault();
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            var point = { lat: position.coords.latitude, lng: position.coords.longitude };
+                            $address.val('');
+                            place(point, ZOOM_MAX);
+                            update(point);
+                        }, function (err) {
+                            window.alert(msg('location-error', 'Could not get your location, error was: %error').replace('%error', err.message));
+                        });
+                    });
+                }
+                $el.attr('data-ezgml-ready', '1');
+            });
+        }).catch(failed);
+    }
+
+    Exp.register('gmaplocation', function ($el, options) {
+        if (options && options.value === 'view') { initView($el); } else { initEdit($el); }
+    });
+
+    // for override templates written against the old script: the attribute id (and the lat/long id base) of a map
+    window.eZGmapLocation_MapControl = function (attributeId, base) {
+        var $el = $('#ezgml-map-' + attributeId);
+        if ($el.length) { $el.attr('data-ezgml-base', base); initEdit($el); }
     };
-
-    window.eZGmapLocation_MapView = function ( attributeId, latitude, longitude )
-    {
-        var zoommax = 13;
-        var startPoint, zoom;
-
-        if ( latitude && longitude )
-        {
-            startPoint = new google.maps.LatLng( latitude, longitude );
-            zoom = zoommax;
-        }
-        else
-        {
-            startPoint = new google.maps.LatLng( 0, 0 );
-            zoom = 0;
-        }
-
-        var map = new google.maps.Map( document.getElementById( 'ezgml-map-' + attributeId ), { center: startPoint, zoom: zoom, mapTypeId: google.maps.MapTypeId.ROADMAP } );
-        var marker = new google.maps.Marker( { map: map, position: startPoint } );
+    window.eZGmapLocation_MapView = function (attributeId) {
+        var $el = $('#ezgml-map-' + attributeId);
+        if ($el.length) { initView($el); }
     };
-
-    // sets up every map of the page that is not set up yet; a template may print this file more than once
-    window.eZGmapLocation_setUpMaps = function ()
-    {
-        var i, el, id, nodes, w, h;
-        nodes = document.querySelectorAll( '[data-ezgml-edit]' );
-        for ( i = 0; i < nodes.length; i++ )
-        {
-            el = nodes[i];
-            if ( el.getAttribute( 'data-ezgml-ready' ) )
-                continue;
-            el.setAttribute( 'data-ezgml-ready', '1' );
-            id = el.getAttribute( 'data-ezgml-edit' );
-            messages[id] = { notFound: el.getAttribute( 'data-ezgml-msg-not-found' ),
-                             locationError: el.getAttribute( 'data-ezgml-msg-location-error' ) };
-            if ( typeof google === 'undefined' || !google.maps )
-            {
-                // the map API did not load (no API key, blocked, offline): the buttons stay inactive, as with "return false"
-                document.getElementById( 'ezgml-address-button-' + id ).onclick = function () { return false; };
-                document.getElementById( 'ezgml-restore-button-' + id ).onclick = function () { return false; };
-                document.getElementById( 'ezgml-mylocation-button-' + id ).onclick = function () { return false; };
-                continue;
-            }
-            window.eZGmapLocation_MapControl( id, el.getAttribute( 'data-ezgml-base' ) );
-        }
-        nodes = document.querySelectorAll( '[data-ezgml-view]' );
-        for ( i = 0; i < nodes.length; i++ )
-        {
-            el = nodes[i];
-            if ( el.getAttribute( 'data-ezgml-ready' ) )
-                continue;
-            el.setAttribute( 'data-ezgml-ready', '1' );
-            // the size a view template was given ($width, $height); stylesheets/ezgmaplocation.css draws the default
-            // 500 x 280 and keeps the map within its column
-            w = parseInt( el.getAttribute( 'data-ezgml-width' ), 10 );
-            h = parseInt( el.getAttribute( 'data-ezgml-height' ), 10 );
-            if ( w > 0 )
-                el.style.width = w + 'px';
-            if ( h > 0 )
-                el.style.height = h + 'px';
-            if ( typeof google === 'undefined' || !google.maps )
-                continue;
-            window.eZGmapLocation_MapView( el.getAttribute( 'data-ezgml-view' ),
-                                           parseFloat( el.getAttribute( 'data-ezgml-lat' ) ) || 0,
-                                           parseFloat( el.getAttribute( 'data-ezgml-lng' ) ) || 0 );
-        }
-    };
-
-    if ( document.readyState === 'complete' )
-        window.eZGmapLocation_setUpMaps();
-    else
-        window.addEventListener( 'load', window.eZGmapLocation_setUpMaps, false );
-})();
+}(window, document));
