@@ -1,5 +1,25 @@
 CHANGELOG
 
+Version 6.1.0
+-------------------------------------------------------------------------------
+* Moved to the current Google Maps JavaScript API: the script adds Google's
+  loader itself (loading=async) and uses importLibrary (maps, marker,
+  geocoding). With [GMapSettings] MapId the markers are AdvancedMarkerElement
+  and the map follows the administration's light or dark mode; without a Map
+  ID the classic google.maps.Marker stays as the fallback. The address search
+  uses the promise form of google.maps.Geocoder.
+* New settings MapId, ApiVersion, Language and Region.
+* The edit and view scripts are an expui module on the kernel's jQuery 4
+  (Exp.$): no YUI, no inline script, no eval; the templates only print
+  data-ezgml-* attributes. Needs the expui extension.
+* Without an API key no script from Google is loaded: the latitude and
+  longitude fields stay and an OpenStreetMap link shows the position. A
+  refused key (gm_authFailure) or a blocked script falls back the same way.
+* Added doc/ (settings, Google setup, Content Security Policy, upgrading,
+  testing). The DB-less tests were rewritten for the new script.
+* The old functions eZGmapLocation_MapControl() and eZGmapLocation_MapView()
+  remain for override templates.
+
 Version 6.0.12
 -------------------------------------------------------------------------------
 * The edit form and the view template load the Google Maps JavaScript API
