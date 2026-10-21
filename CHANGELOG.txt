@@ -1,5 +1,16 @@
 CHANGELOG
 
+Version 6.1.1
+-------------------------------------------------------------------------------
+* Fixed: with the real Google script the map was never drawn. The loader
+  reports its load a moment before google.maps.importLibrary exists; the
+  script now waits for it (up to five seconds) instead of giving up, so the
+  edit form and the view template draw the map. Found by the first run
+  against Google's own script; 6.1.0 was only checked against a stand-in.
+* Fixed: the advanced marker's drag is read from its gmp-dragend event
+  (addListener on the web component logged a console warning).
+* A map that cannot start now logs the reason in the console.
+
 Version 6.1.0
 -------------------------------------------------------------------------------
 * Moved to the current Google Maps JavaScript API: the script adds Google's

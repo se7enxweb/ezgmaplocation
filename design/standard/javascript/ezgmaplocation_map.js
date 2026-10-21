@@ -43,11 +43,17 @@
             script.async = true;
             script.src = 'https://maps.googleapis.com/maps/api/js?' + query;
             script.onload = function () {
-                if (window.google && window.google.maps && window.google.maps.importLibrary) {
-                    resolve(window.google.maps);
-                } else {
-                    reject(new Error('The Google Maps API did not start'));
-                }
+                // the real loader defines google.maps.importLibrary a moment after the script has run
+                var tries = 0;
+                (function wait() {
+                    if (window.google && window.google.maps && window.google.maps.importLibrary) {
+                        resolve(window.google.maps);
+                    } else if (++tries > 100) {
+                        reject(new Error('The Google Maps API did not start'));
+                    } else {
+                        window.setTimeout(wait, 50);
+                    }
+                }());
             };
             script.onerror = function () { reject(new Error('The Google Maps script could not be loaded')); };
             document.head.appendChild(script);
@@ -58,7 +64,7 @@
 
     // Google calls this when the key is refused (wrong key, API not enabled, referrer not allowed, billing)
     var authListeners = [];
-    window.gm_authFailure = function () { authListeners.forEach(function (fn) { fn(); }); };
+    window.gm_authFailure = function () { authListeners.forEach(function (fn) { fn('Google refused the API key (gm_authFailure): see the console message from Google above'); }); };
 
     /** Reads the element's settings. */
     function settings($el) {
@@ -95,14 +101,21 @@
         if (marker.advanced) { marker.m.position = position; } else { marker.m.setPosition(position); }
     }
     function onDragEnd(marker, fn) {
-        marker.m.addListener('dragend', function () {
+        var read = function () {
             var p = marker.advanced ? marker.m.position : marker.m.getPosition();
             fn({ lat: lat(p), lng: lng(p) });
-        });
+        };
+        if (marker.advanced) {
+            // the advanced marker is a web component: its events are gmp-* events (addListener is deprecated for it)
+            marker.m.addEventListener('gmp-dragend', read);
+        } else {
+            marker.m.addListener('dragend', read);
+        }
     }
 
-    function mapFailed($el, text) {
+    function mapFailed($el, text, reason) {
         $el.attr('hidden', 'hidden');
+        if (reason && window.console) { window.console.warn('ezgmaplocation:', reason); }
         var $note = $('<p class="ezgml-map-error" role="status"></p>').text(text);
         $el.after($note);
         if (window.console) { window.console.warn('ezgmaplocation: ' + text); }
@@ -121,7 +134,7 @@
         if (!opt.key) { return; } // the template shows the coordinates and the OpenStreetMap link
         var la = parseFloat($el.attr('data-ezgml-lat')) || 0, lo = parseFloat($el.attr('data-ezgml-lng')) || 0;
         var has = !!(la || lo);
-        var failed = function () { mapFailed($el, $el.attr('data-ezgml-msg-map-error') || 'The map could not be loaded.'); };
+        var failed = function (reason) { mapFailed($el, $el.attr('data-ezgml-msg-map-error') || 'The map could not be loaded.', reason); };
         authListeners.push(failed);
         loadGoogle(opt).then(function (gm) {
             return libraries(opt, false).then(function (libs) {
@@ -157,7 +170,7 @@
 
         if (!opt.key) { return; } // no key: the fields and the OpenStreetMap link are the editor
 
-        var failed = function () { mapFailed($el, msg('map-error', 'The map could not be loaded.')); };
+        var failed = function (reason) { mapFailed($el, msg('map-error', 'The map could not be loaded.'), reason); };
         authListeners.push(failed);
 
         loadGoogle(opt).then(function (gm) {
