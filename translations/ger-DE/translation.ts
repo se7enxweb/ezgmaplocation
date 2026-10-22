@@ -68,5 +68,13 @@
         <source>Could not get your location, error was: %error</source>
         <translation>Ihr Standort konnte nicht ermittelt werden, Fehler: %error</translation>
     </message>
+    <message>
+        <source>Open in OpenStreetMap</source>
+        <translation>In OpenStreetMap öffnen</translation>
+    </message>
+    <message>
+        <source>The map could not be loaded. Enter the latitude and longitude by hand.</source>
+        <translation>Die Karte konnte nicht geladen werden. Geben Sie Breitengrad und Längengrad von Hand ein.</translation>
+    </message>
 </context>
 </TS>
