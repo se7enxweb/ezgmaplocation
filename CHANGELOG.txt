@@ -1,5 +1,15 @@
 CHANGELOG
 
+Version 6.1.2
+-------------------------------------------------------------------------------
+* Updated: German translation of the two edit form strings added in 6.1.1
+  ("Open in OpenStreetMap" and the notice shown when the map cannot load).
+* Tested with a real Google Maps API key and Map ID: the advanced map and the
+  classic map draw, the address search finds places, dragging the marker or
+  clicking the map sets the coordinates, on Apache/PHP-FPM and Velocity, in
+  the light and the dark admin theme. The classic marker logs Google's own
+  deprecation notice for google.maps.Marker; a Map ID avoids it.
+
 Version 6.1.1
 -------------------------------------------------------------------------------
 * Fixed: with the real Google script the map was never drawn. The loader
