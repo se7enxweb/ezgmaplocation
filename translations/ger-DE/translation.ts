@@ -6,15 +6,15 @@
     <message>
         <source>GMap Location</source>
         <comment>Datatype name</comment>
-        <translation type="unfinished">GMap Ort</translation>
+        <translation>GMap-Standort</translation>
     </message>
     <message>
         <source>Missing Latitude/Longitude input.</source>
-        <translation type="unfinished">Längengrad/Breitengrad Eingabe fehlt.</translation>
+        <translation>Breiten-/Längengrad fehlt.</translation>
     </message>
     <message>
         <source>Invalid Latitude/Longitude input.</source>
-        <translation type="unfinished">Längengrad/Breitengrad Eingabe ist fehlerhaft.</translation>
+        <translation>Ungültiger Breiten-/Längengrad.</translation>
     </message>
     <message>
         <source>Latitude</source>
