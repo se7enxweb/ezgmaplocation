@@ -54,14 +54,6 @@
     </message>
     <message>
         <source>%address not found</source>
-        <translation>%address nije pronađeno</translation>
-    </message>
-    <message>
-        <source>Could not get your location, error was: %error</source>
-        <translation>Nije moguće utvrditi vašu lokaciju, pogreška: %error</translation>
-    </message>
-    <message>
-        <source>%address not found</source>
         <translation>Nije pronađeno: %address</translation>
     </message>
     <message>
