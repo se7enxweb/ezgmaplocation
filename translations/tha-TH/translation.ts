@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
+<context>
+    <name>extension/ezgmaplocation/datatype</name>
+    <message>
+        <source>Latitude</source>
+        <translation>ละติจูด</translation>
+    </message>
+    <message>
+        <source>Longitude</source>
+        <translation>ลองจิจูด</translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation>กู้คืน</translation>
+    </message>
+    <message>
+        <source>Find address</source>
+        <translation>ค้นหาที่อยู่</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>ที่อยู่</translation>
+    </message>
+    <message>
+        <source>Map</source>
+        <translation>แผนที่</translation>
+    </message>
+    <message>
+        <source>My current location</source>
+        <translation>ตำแหน่งปัจจุบันของฉัน</translation>
+    </message>
+    <message>
+        <source>Restores location and address values to what it was on page load.</source>
+        <translation>คืนค่าตำแหน่งและที่อยู่เป็นค่าตอนโหลดหน้า</translation>
+    </message>
+    <message>
+        <source>Gets your current position if your browser support GeoLocation and you grant this website access to it! Most accurate if you have a built in gps in your Internet device! Also note that you might still have to type in address manually!</source>
+        <translation>รับตำแหน่งปัจจุบันของคุณ หากเบราว์เซอร์รองรับ GeoLocation และคุณอนุญาตให้เว็บไซต์นี้เข้าถึง แม่นยำที่สุดหากอุปกรณ์อินเทอร์เน็ตของคุณมี GPS ในตัว โปรดทราบว่าคุณอาจยังต้องพิมพ์ที่อยู่ด้วยตนเอง</translation>
+    </message>
+    <message>
+        <source>GMap Location</source>
+        <comment>Datatype name</comment>
+        <translation>ตำแหน่งแผนที่ Google</translation>
+    </message>
+    <message>
+        <source>Missing Latitude/Longitude input.</source>
+        <translation>ไม่มีข้อมูลละติจูด/ลองจิจูด</translation>
+    </message>
+    <message>
+        <source>Invalid Latitude/Longitude input.</source>
+        <translation>ข้อมูลละติจูด/ลองจิจูดไม่ถูกต้อง</translation>
+    </message>
+    <message>
+        <source>%address not found</source>
+        <translation>ไม่พบ %address</translation>
+    </message>
+    <message>
+        <source>Could not get your location, error was: %error</source>
+        <translation>ไม่สามารถรับตำแหน่งของคุณได้ ข้อผิดพลาดคือ: %error</translation>
+    </message>
+</context>
+</TS>
