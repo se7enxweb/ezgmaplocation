@@ -1,5 +1,9 @@
 CHANGELOG
 
+Version 6.1.5
+-------------------------------------------------------------------------------
+* Updated: One copyright notice, Exponential Foundation and 7x.
+
 Version 6.1.4
 -------------------------------------------------------------------------------
 * Added: Translations into 59 more languages: aka-GH, arc-IQ, asm-IN, aze-AZ,
