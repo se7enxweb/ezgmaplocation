@@ -23,7 +23,7 @@
  * What it does not do: the search index, the sort key and the object names were built from the encoded value. They
  * follow on the next publish of the object, or with a reindex of the objects listed here.
  *
- * @copyright Copyright (C) 1998 - 2026 7x & Exponential Foundation. All rights reserved.
+ * @copyright Copyright (C) 1998 - 2026 Exponential Foundation and 7x. All rights reserved.
  * @license GNU General Public License v2.0 (or any later version)
  * @package ezgmaplocation
  */
